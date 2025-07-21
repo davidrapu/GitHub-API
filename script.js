@@ -1,30 +1,41 @@
 async function fetchUserData(username) {
-    let userData = undefined;
     await fetch(`https://api.github.com/users/${username}`).then(response => {
-        userData = response.json();
         console.log("User data fetched successfully");
+        return response.json();
     }).catch(error =>{
         console.error('Error fetching user data:', error);
+        return false;
     });
-    return userData;
 }
 
 async function fetchUrlData(url){
-    let urlData = undefined;
     await fetch(url).then(response => {
-        urlData = response.json();
+        return response.json();
     }).catch(error =>{
         console.error('Error fetching URL data:', error);
+        return false
     });
-    return urlData;
 }
 
-async function displayUserData(){
+async function displayUserData(username){
     const box = document.querySelector('.box');
-    const userData = await fetchUserData("A-Karim2003");
-    box.textContent = JSON.stringify(userData);
-    const userFollowers = await fetchUrlData(userData.followers_url);
-    console.log(userFollowers);
+    const userData = await fetchUserData(username);
+
+    if (userData === false) return false;
+
+    const userName = userData.name;
+    const userImage = userData.avatar_url;
+    const userFollowersCount = userData.followers;
+    const userFollowingCount = userData.following;
+
+    console.log(userName);
 }
 
-displayUserData();
+document.getElementById("username_search_form").addEventListener('submit', (e) => {
+    e.preventDefault();
+    const form = new FormData(e.target);
+
+    // form object
+    const data = Object.fromEntries(form.entries());
+    console.log(data.username_input);
+})
